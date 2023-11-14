@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {
@@ -9,16 +10,19 @@ import {
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import {DateTime} from '../components/DateTime';
-import {useSetRecoilState} from 'recoil';
-import {ReminderDataAtom} from '../data/reminderCluster';
+import {useRecoilState} from 'recoil';
+import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
+import {SaveReminders} from '../utils/AsyncStorage';
 
-export const SetReminderScreen = () => {
+export const ReminderScreen = () => {
+  const [id, setId] = useState<number | null>(null);
   const [reminderNote, setReminderNote] = useState('');
   const [date, setDate] = useState(new Date());
   const [repeat, setRepeat] = useState('never');
   const [isFocus, setIsFocus] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const setReminders = useSetRecoilState(ReminderDataAtom);
+  const [reminders, setReminders] = useRecoilState(ReminderDataAtom);
+  const [currentReminder, setCurrentReminder] = useRecoilState(CurrentReminder);
 
   const repeatOptions = [
     {label: 'never', value: 'never'},
@@ -26,6 +30,22 @@ export const SetReminderScreen = () => {
     {label: 'weekly', value: 'weekly'},
     {label: 'monthly', value: 'monthly'},
   ];
+
+  useEffect(() => {
+    if (currentReminder) {
+      setId(currentReminder.id);
+      setReminderNote(currentReminder.reminderNote);
+      setDate(new Date(currentReminder.date));
+      setRepeat(currentReminder.repeat);
+    }
+    return () => {
+      setCurrentReminder(null);
+    };
+  }, [currentReminder]);
+
+  useEffect(() => {
+    SaveReminders(reminders);
+  }, [reminders]);
 
   useEffect(() => {
     if (date && reminderNote && repeat) {
@@ -37,13 +57,12 @@ export const SetReminderScreen = () => {
 
   const HandleAddReminder = async () => {
     if (isReady) {
-      const id = Date.now();
       setReminders(prev => {
         return [
           {
-            id: id,
+            id: id ? id : Date.now(),
             reminderNote: reminderNote,
-            date: date,
+            date: new Date(date).getTime(),
             repeat: repeat,
           },
           ...prev,
@@ -144,7 +163,7 @@ export const SetReminderScreen = () => {
             opacity: isReady ? 1 : 0.3,
           }}>
           <Text style={{fontSize: 24, color: isReady ? 'black' : 'grey'}}>
-            Add Reminder
+            {id ? 'Edit Reminder' : 'Add Reminder'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -169,8 +188,8 @@ const styles = StyleSheet.create({
   label: {
     position: 'absolute',
     backgroundColor: 'white',
-    left: 22,
-    top: 8,
+    left: 27,
+    top: 7,
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 12,

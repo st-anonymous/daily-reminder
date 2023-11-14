@@ -2,8 +2,8 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ReminderProps} from '../types/ReminderProps';
-import {useRecoilState} from 'recoil';
-import {ReminderDataAtom} from '../data/reminderCluster';
+import {useRecoilState, useSetRecoilState} from 'recoil';
+import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {SaveReminders} from '../utils/AsyncStorage';
 import {useNavigation} from '@react-navigation/native';
 import {months} from '../data/months';
@@ -11,6 +11,7 @@ import {months} from '../data/months';
 const ReminderCard = (props: ReminderProps) => {
   const {id, reminderNote, date, repeat} = props;
   const [reminders, setReminders] = useRecoilState(ReminderDataAtom);
+  const setCurrentReminder = useSetRecoilState(CurrentReminder);
 
   const dateValue = new Date(date);
   const dateFormat = `${dateValue.getDate()}-${
@@ -23,7 +24,15 @@ const ReminderCard = (props: ReminderProps) => {
   const navigation = useNavigation();
 
   const HandleEditClick = () => {
-    navigation.navigate('SetReminder');
+    setCurrentReminder({
+      id: id,
+      reminderNote: reminderNote,
+      date: date,
+      repeat: repeat,
+    });
+    navigation.navigate('ReminderStack', {
+      screen: 'Reminder',
+    });
   };
 
   const HandleDeleteClick = () => {

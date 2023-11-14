@@ -11,7 +11,6 @@ export const GetReminders = async () => {
 };
 
 export const SaveReminders = (reminders: Array<ReminderProps>) => {
-  console.log(JSON.stringify(reminders));
   AsyncStorage.removeItem('reminders_array');
   AsyncStorage.setItem('reminders_array', JSON.stringify(reminders));
 };

@@ -28,7 +28,7 @@ const App = () => {
             options={{title: 'Home'}}
           />
           <Tab.Screen
-            name="SetReminderStack"
+            name="ReminderStack"
             component={SetReminderStackScreen}
             options={{title: 'Set Reminder'}}
           />

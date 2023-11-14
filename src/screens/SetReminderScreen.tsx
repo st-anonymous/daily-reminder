@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import {DateTime} from '../components/DateTime';
+import {AddReminder} from '../utils/AsyncStorage';
 
 export const SetReminderScreen = () => {
   const [reminderNote, setReminderNote] = useState('');
   const [date, setDate] = useState(new Date());
-  const [repeat, setRepeat] = useState('');
+  const [repeat, setRepeat] = useState('never');
   const [isFocus, setIsFocus] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const repeatOptions = [
     {label: 'never', value: 'never'},
@@ -24,8 +26,25 @@ export const SetReminderScreen = () => {
   ];
 
   useEffect(() => {
-    console.log(date, reminderNote, repeat);
+    if (date && reminderNote && repeat) {
+      setIsReady(true);
+    } else {
+      setIsReady(false);
+    }
   }, [date, reminderNote, repeat]);
+
+  const HandleAddReminder = async () => {
+    if (isReady) {
+      await AddReminder({
+        reminderNote: reminderNote,
+        date: date,
+        repeat: repeat,
+      });
+      setReminderNote('');
+      setDate(new Date());
+      setRepeat('never');
+    }
+  };
 
   const renderLabel = () => {
     if (repeat || isFocus) {
@@ -49,7 +68,7 @@ export const SetReminderScreen = () => {
         style={{
           height: '7.5%',
           width: '100%',
-          backgroundColor: 'green',
+          backgroundColor: '#4CAF50',
           justifyContent: 'center',
           alignItems: 'center',
         }}>
@@ -102,16 +121,22 @@ export const SetReminderScreen = () => {
           />
         </View>
         <TouchableOpacity
+          onPress={HandleAddReminder}
           style={{
-            borderColor: 'black',
+            borderColor: isReady ? 'black' : 'grey',
             borderWidth: 1,
             borderRadius: 10,
-            backgroundColor: 'lightgrey',
+            backgroundColor: '#4CAF50',
             width: '80%',
+            height: '7.5%',
             alignItems: 'center',
+            justifyContent: 'center',
             marginTop: 150,
+            opacity: isReady ? 1 : 0.3,
           }}>
-          <Text style={{fontSize: 24, color: 'black'}}>Add Reminder</Text>
+          <Text style={{fontSize: 24, color: isReady ? 'black' : 'grey'}}>
+            Add Reminder
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

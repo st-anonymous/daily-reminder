@@ -17,7 +17,7 @@
         android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustPan"
-        android:exported="true">
+        android:exported="true" >
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -29,7 +29,9 @@
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color" android:resource="@color/white"/>
       <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions" />
       <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" />
-      <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver">
+      <receiver 
+          android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver"
+          android:exported="false" >
           <intent-filter>
               <action android:name="android.intent.action.BOOT_COMPLETED" />
               <action android:name="android.intent.action.QUICKBOOT_POWERON" />

@@ -14,10 +14,12 @@ const ReminderCard = (props: ReminderProps) => {
   const setCurrentReminder = useSetRecoilState(CurrentReminder);
 
   const dateValue = new Date(date);
-  const dateFormat = `${dateValue.getDate()}-${
+  const dateFormat = `${dateValue.getDate().toString().padStart(2, '0')}-${
     months[dateValue.getMonth()]
   }-${dateValue.getFullYear()}`;
-  const timeFormat = `${dateValue.getHours() % 12}:${dateValue.getMinutes()} ${
+  const timeFormat = `${(dateValue.getHours() % 12)
+    .toString()
+    .padStart(2, '0')}:${dateValue.getMinutes().toString().padStart(2, '0')} ${
     dateValue.getHours() > 12 ? 'PM' : 'AM'
   }`;
 

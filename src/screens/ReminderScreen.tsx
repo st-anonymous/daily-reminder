@@ -13,6 +13,8 @@ import {DateTime} from '../components/DateTime';
 import {useRecoilState} from 'recoil';
 import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {SaveReminders} from '../utils/AsyncStorage';
+import {ReminderProps} from '../types/ReminderProps';
+import {useNavigation} from '@react-navigation/native';
 
 export const ReminderScreen = () => {
   const [id, setId] = useState<number | null>(null);
@@ -23,6 +25,8 @@ export const ReminderScreen = () => {
   const [isReady, setIsReady] = useState(false);
   const [reminders, setReminders] = useRecoilState(ReminderDataAtom);
   const [currentReminder, setCurrentReminder] = useRecoilState(CurrentReminder);
+
+  const navigation = useNavigation();
 
   const repeatOptions = [
     {label: 'never', value: 'never'},
@@ -49,7 +53,16 @@ export const ReminderScreen = () => {
 
   useEffect(() => {
     if (date && reminderNote && repeat) {
-      setIsReady(true);
+      if (
+        id &&
+        reminderNote === currentReminder?.reminderNote &&
+        new Date(date).getTime() === currentReminder.date &&
+        repeat === currentReminder.repeat
+      ) {
+        setIsReady(false);
+      } else {
+        setIsReady(true);
+      }
     } else {
       setIsReady(false);
     }
@@ -57,20 +70,36 @@ export const ReminderScreen = () => {
 
   const HandleAddReminder = async () => {
     if (isReady) {
-      setReminders(prev => {
-        return [
+      if (id) {
+        let currRem: Array<ReminderProps> = [
           {
-            id: id ? id : Date.now(),
+            id: id,
             reminderNote: reminderNote,
             date: new Date(date).getTime(),
             repeat: repeat,
           },
-          ...prev,
         ];
-      });
+        currRem = [...currRem, ...reminders.filter(item => item.id !== id)];
+        setReminders(currRem);
+      } else {
+        setReminders(prev => {
+          return [
+            {
+              id: Date.now(),
+              reminderNote: reminderNote,
+              date: new Date(date).getTime(),
+              repeat: repeat,
+            },
+            ...prev,
+          ];
+        });
+      }
       setReminderNote('');
       setDate(new Date());
       setRepeat('never');
+      navigation.navigate('HomeStack', {
+        screen: 'Home',
+      });
     }
   };
 

@@ -13,9 +13,11 @@ export const HomeScreen = () => {
   const setCurrentReminder = useSetRecoilState(CurrentReminder);
   const isFocused = useIsFocused();
 
-  if (isFocused) {
-    setCurrentReminder(null);
-  }
+  useEffect(() => {
+    if (isFocused) {
+      setCurrentReminder(null);
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     const getReminder = async () => {

@@ -1,8 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Text, View} from 'react-native';
+import {ReminderScroll} from '../components/ReminderScroll';
+import {useSetRecoilState} from 'recoil';
+import {ReminderDataAtom} from '../data/reminderCluster';
+import {GetReminders} from '../utils/AsyncStorage';
 
 export const HomeScreen = () => {
+  const setReminders = useSetRecoilState(ReminderDataAtom);
+
+  useEffect(() => {
+    const getReminder = async () => {
+      const rems = await GetReminders();
+      setReminders(rems);
+    };
+    getReminder();
+  }, []);
+
   return (
     <View
       style={{
@@ -33,13 +48,7 @@ export const HomeScreen = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Text
-          style={{
-            fontSize: 36,
-            color: 'white',
-          }}>
-          Body
-        </Text>
+        <ReminderScroll />
       </View>
     </View>
   );

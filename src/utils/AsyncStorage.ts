@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ReminderProps} from '../types/ReminderProps';
 
 export const GetReminders = async () => {
-  let reminders: Array<Object> = [];
+  let reminders: Array<ReminderProps> = [];
   const reminders_array = await AsyncStorage.getItem('reminders_array');
   if (reminders_array) {
     reminders = [...JSON.parse(reminders_array as string)];
@@ -9,19 +10,8 @@ export const GetReminders = async () => {
   return reminders;
 };
 
-export type AddReminderProps = {
-  reminderNote: string;
-  date: Date;
-  repeat: string;
-};
-
-export const AddReminder = async (props: AddReminderProps) => {
-  const {reminderNote, date, repeat} = props;
-  let reminders = await GetReminders();
-  reminders.push({
-    reminderNote: reminderNote,
-    date: date,
-    repeat: repeat,
-  });
+export const SaveReminders = (reminders: Array<ReminderProps>) => {
+  console.log(JSON.stringify(reminders));
+  AsyncStorage.removeItem('reminders_array');
   AsyncStorage.setItem('reminders_array', JSON.stringify(reminders));
 };

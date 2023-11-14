@@ -14,7 +14,7 @@ export const HomeScreen = () => {
         style={{
           height: '7.5%',
           width: '100%',
-          backgroundColor: 'green',
+          backgroundColor: '#4CAF50',
           justifyContent: 'center',
           alignItems: 'center',
         }}>

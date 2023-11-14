@@ -17,7 +17,7 @@ const App = () => {
             },
             null,
           ],
-          tabBarActiveTintColor: 'green',
+          tabBarActiveTintColor: '#4CAF50',
           tabBarInactiveTintColor: 'grey',
         }}>
         <Tab.Screen

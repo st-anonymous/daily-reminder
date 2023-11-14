@@ -2,8 +2,8 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ReminderProps} from '../types/ReminderProps';
-import {useRecoilState} from 'recoil';
-import {ReminderDataAtom} from '../data/reminderCluster';
+import {useRecoilState, useSetRecoilState} from 'recoil';
+import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {SaveReminders} from '../utils/AsyncStorage';
 import {useNavigation} from '@react-navigation/native';
 import {months} from '../data/months';
@@ -11,19 +11,30 @@ import {months} from '../data/months';
 const ReminderCard = (props: ReminderProps) => {
   const {id, reminderNote, date, repeat} = props;
   const [reminders, setReminders] = useRecoilState(ReminderDataAtom);
+  const setCurrentReminder = useSetRecoilState(CurrentReminder);
 
   const dateValue = new Date(date);
-  const dateFormat = `${dateValue.getDate()}-${
+  const dateFormat = `${dateValue.getDate().toString().padStart(2, '0')}-${
     months[dateValue.getMonth()]
   }-${dateValue.getFullYear()}`;
-  const timeFormat = `${dateValue.getHours() % 12}:${dateValue.getMinutes()} ${
+  const timeFormat = `${(dateValue.getHours() % 12)
+    .toString()
+    .padStart(2, '0')}:${dateValue.getMinutes().toString().padStart(2, '0')} ${
     dateValue.getHours() > 12 ? 'PM' : 'AM'
   }`;
 
   const navigation = useNavigation();
 
   const HandleEditClick = () => {
-    navigation.navigate('SetReminder');
+    setCurrentReminder({
+      id: id,
+      reminderNote: reminderNote,
+      date: date,
+      repeat: repeat,
+    });
+    navigation.navigate('ReminderStack', {
+      screen: 'Reminder',
+    });
   };
 
   const HandleDeleteClick = () => {

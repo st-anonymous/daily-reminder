@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {
@@ -9,16 +10,23 @@ import {
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import {DateTime} from '../components/DateTime';
-import {useSetRecoilState} from 'recoil';
-import {ReminderDataAtom} from '../data/reminderCluster';
+import {useRecoilState} from 'recoil';
+import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
+import {SaveReminders} from '../utils/AsyncStorage';
+import {ReminderProps} from '../types/ReminderProps';
+import {useNavigation} from '@react-navigation/native';
 
-export const SetReminderScreen = () => {
+export const ReminderScreen = () => {
+  const [id, setId] = useState<number | null>(null);
   const [reminderNote, setReminderNote] = useState('');
   const [date, setDate] = useState(new Date());
   const [repeat, setRepeat] = useState('never');
   const [isFocus, setIsFocus] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const setReminders = useSetRecoilState(ReminderDataAtom);
+  const [reminders, setReminders] = useRecoilState(ReminderDataAtom);
+  const [currentReminder, setCurrentReminder] = useRecoilState(CurrentReminder);
+
+  const navigation = useNavigation();
 
   const repeatOptions = [
     {label: 'never', value: 'never'},
@@ -28,8 +36,33 @@ export const SetReminderScreen = () => {
   ];
 
   useEffect(() => {
+    if (currentReminder) {
+      setId(currentReminder.id);
+      setReminderNote(currentReminder.reminderNote);
+      setDate(new Date(currentReminder.date));
+      setRepeat(currentReminder.repeat);
+    }
+    return () => {
+      setCurrentReminder(null);
+    };
+  }, [currentReminder]);
+
+  useEffect(() => {
+    SaveReminders(reminders);
+  }, [reminders]);
+
+  useEffect(() => {
     if (date && reminderNote && repeat) {
-      setIsReady(true);
+      if (
+        id &&
+        reminderNote === currentReminder?.reminderNote &&
+        new Date(date).getTime() === currentReminder.date &&
+        repeat === currentReminder.repeat
+      ) {
+        setIsReady(false);
+      } else {
+        setIsReady(true);
+      }
     } else {
       setIsReady(false);
     }
@@ -37,21 +70,36 @@ export const SetReminderScreen = () => {
 
   const HandleAddReminder = async () => {
     if (isReady) {
-      const id = Date.now();
-      setReminders(prev => {
-        return [
+      if (id) {
+        let currRem: Array<ReminderProps> = [
           {
             id: id,
             reminderNote: reminderNote,
-            date: date,
+            date: new Date(date).getTime(),
             repeat: repeat,
           },
-          ...prev,
         ];
-      });
+        currRem = [...currRem, ...reminders.filter(item => item.id !== id)];
+        setReminders(currRem);
+      } else {
+        setReminders(prev => {
+          return [
+            {
+              id: Date.now(),
+              reminderNote: reminderNote,
+              date: new Date(date).getTime(),
+              repeat: repeat,
+            },
+            ...prev,
+          ];
+        });
+      }
       setReminderNote('');
       setDate(new Date());
       setRepeat('never');
+      navigation.navigate('HomeStack', {
+        screen: 'Home',
+      });
     }
   };
 
@@ -144,7 +192,7 @@ export const SetReminderScreen = () => {
             opacity: isReady ? 1 : 0.3,
           }}>
           <Text style={{fontSize: 24, color: isReady ? 'black' : 'grey'}}>
-            Add Reminder
+            {id ? 'Edit Reminder' : 'Add Reminder'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -169,8 +217,8 @@ const styles = StyleSheet.create({
   label: {
     position: 'absolute',
     backgroundColor: 'white',
-    left: 22,
-    top: 8,
+    left: 27,
+    top: 7,
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 12,

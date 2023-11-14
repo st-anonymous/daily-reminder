@@ -1,6 +1,6 @@
 export type ReminderProps = {
-  id: number;
+  id: number | null;
   reminderNote: string;
-  date: Date;
+  date: number;
   repeat: string;
 };

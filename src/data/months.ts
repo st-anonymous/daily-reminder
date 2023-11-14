@@ -1,4 +1,4 @@
-export const months = {
+export const months: {[key: number]: string} = {
   0: 'JAN',
   1: 'FEB',
   2: 'MAR',

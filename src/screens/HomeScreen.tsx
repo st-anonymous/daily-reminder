@@ -4,11 +4,20 @@ import React, {useEffect} from 'react';
 import {Text, View} from 'react-native';
 import {ReminderScroll} from '../components/ReminderScroll';
 import {useSetRecoilState} from 'recoil';
-import {ReminderDataAtom} from '../data/reminderCluster';
+import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {GetReminders} from '../utils/AsyncStorage';
+import {useIsFocused} from '@react-navigation/native';
 
 export const HomeScreen = () => {
   const setReminders = useSetRecoilState(ReminderDataAtom);
+  const setCurrentReminder = useSetRecoilState(CurrentReminder);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      setCurrentReminder(null);
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     const getReminder = async () => {

@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import {DateTime} from '../components/DateTime';
-import {AddReminder} from '../utils/AsyncStorage';
+import {useSetRecoilState} from 'recoil';
+import {ReminderDataAtom} from '../data/reminderCluster';
 
 export const SetReminderScreen = () => {
   const [reminderNote, setReminderNote] = useState('');
@@ -17,6 +18,7 @@ export const SetReminderScreen = () => {
   const [repeat, setRepeat] = useState('never');
   const [isFocus, setIsFocus] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const setReminders = useSetRecoilState(ReminderDataAtom);
 
   const repeatOptions = [
     {label: 'never', value: 'never'},
@@ -35,10 +37,17 @@ export const SetReminderScreen = () => {
 
   const HandleAddReminder = async () => {
     if (isReady) {
-      await AddReminder({
-        reminderNote: reminderNote,
-        date: date,
-        repeat: repeat,
+      const id = Date.now();
+      setReminders(prev => {
+        return [
+          {
+            id: id,
+            reminderNote: reminderNote,
+            date: date,
+            repeat: repeat,
+          },
+          ...prev,
+        ];
       });
       setReminderNote('');
       setDate(new Date());

@@ -15,6 +15,8 @@ import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {SaveReminders} from '../utils/AsyncStorage';
 import {ReminderProps} from '../types/ReminderProps';
 import {useNavigation} from '@react-navigation/native';
+import {DeleteNotification, ScheduleNotification} from '../utils/PushNotification';
+import {GetRepeatTime, GetRepeatType} from '../types/GetRepeat';
 
 export const ReminderScreen = () => {
   const [id, setId] = useState<number | null>(null);
@@ -32,7 +34,7 @@ export const ReminderScreen = () => {
     {label: 'never', value: 'never'},
     {label: 'daily', value: 'daily'},
     {label: 'weekly', value: 'weekly'},
-    {label: 'monthly', value: 'monthly'},
+    {label: 'bi-weekly', value: 'bi-weekly'},
   ];
 
   useEffect(() => {
@@ -70,33 +72,31 @@ export const ReminderScreen = () => {
 
   const HandleAddReminder = async () => {
     if (isReady) {
-      if (id) {
-        let currRem: Array<ReminderProps> = [
-          {
-            id: id,
-            reminderNote: reminderNote,
-            date: new Date(date).getTime(),
-            repeat: repeat,
-          },
-        ];
-        currRem = [...currRem, ...reminders.filter(item => item.id !== id)];
-        setReminders(currRem);
-      } else {
-        setReminders(prev => {
-          return [
-            {
-              id: Date.now(),
-              reminderNote: reminderNote,
-              date: new Date(date).getTime(),
-              repeat: repeat,
-            },
-            ...prev,
-          ];
-        });
-      }
+      let currRem: ReminderProps = {
+        id: id ? id : Date.now(),
+        reminderNote: reminderNote,
+        date: new Date(date).getTime(),
+        repeat: repeat,
+      };
+      const currReminders = [
+        currRem,
+        ...reminders.filter(item => item.id !== id),
+      ];
+      setReminders(currReminders);
+
+      DeleteNotification(currRem.id);
+      ScheduleNotification({
+        id: currRem.id,
+        message: currRem.reminderNote,
+        date: currRem.date,
+        repeatType: GetRepeatType(currRem.repeat),
+        repeatTime: GetRepeatTime(currRem.repeat),
+      });
+
       setReminderNote('');
       setDate(new Date());
       setRepeat('never');
+
       navigation.navigate('HomeStack', {
         screen: 'Home',
       });

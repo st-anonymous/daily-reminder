@@ -7,6 +7,7 @@ import {useSetRecoilState} from 'recoil';
 import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {GetReminders} from '../utils/AsyncStorage';
 import {useIsFocused} from '@react-navigation/native';
+import PushNotification from 'react-native-push-notification';
 
 export const HomeScreen = () => {
   const setReminders = useSetRecoilState(ReminderDataAtom);
@@ -16,6 +17,15 @@ export const HomeScreen = () => {
   useEffect(() => {
     if (isFocused) {
       setCurrentReminder(null);
+      PushNotification.getScheduledLocalNotifications(value => {
+        console.log(value, 'scheduledNotifs');
+      });
+      PushNotification.getChannels(value => {
+        console.log(value, 'channels');
+      });
+      PushNotification.getDeliveredNotifications(value => {
+        console.log(value, 'deliveredNotifs');
+      });
     }
   }, [isFocused]);
 

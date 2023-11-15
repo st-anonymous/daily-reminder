@@ -7,6 +7,7 @@ import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {SaveReminders} from '../utils/AsyncStorage';
 import {useNavigation} from '@react-navigation/native';
 import {months} from '../data/months';
+import { DeleteNotification } from '../utils/PushNotification';
 
 const ReminderCard = (props: ReminderProps) => {
   const {id, reminderNote, date, repeat} = props;
@@ -39,6 +40,7 @@ const ReminderCard = (props: ReminderProps) => {
 
   const HandleDeleteClick = () => {
     const updatedReminders = reminders.filter(item => item.id !== id);
+    DeleteNotification(id);
     SaveReminders(updatedReminders);
     setReminders(updatedReminders);
   };

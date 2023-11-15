@@ -21,5 +21,17 @@ PushNotification.configure({
   popInitialNotification: true,
   requestPermissions: Platform.OS === 'ios',
 });
+PushNotification.createChannel(
+  {
+    channelId: 'daily-reminder',
+    channelName: 'daily reminder channel',
+    channelDescription:
+      'A channel to categorise your daily reminder notifications',
+    playSound: true,
+    soundName: 'default',
+    vibrate: true,
+  },
+  created => console.log(`createChannel returned '${created}'`),
+);
 
 AppRegistry.registerComponent(appName, () => App);

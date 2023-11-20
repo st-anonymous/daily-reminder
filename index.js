@@ -18,7 +18,7 @@ PushNotification.configure({
   onRegistrationError: function (err) {
     console.error(err.message, err);
   },
-  popInitialNotification: true,
+  popInitialNotification: false,
   requestPermissions: Platform.OS === 'ios',
 });
 PushNotification.createChannel(
@@ -30,6 +30,7 @@ PushNotification.createChannel(
     playSound: true,
     soundName: 'default',
     vibrate: true,
+    importance: 4,
   },
   created => console.log(`createChannel returned '${created}'`),
 );

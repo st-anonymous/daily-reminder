@@ -10,29 +10,22 @@ export const ScheduleNotification = (props: ScheduleNotificationProps) => {
     repeatType,
     repeatTime,
   } = props;
-  PushNotification.localNotification({
-    id: id.toString(),
-    channelId: channelId,
-    title: 'hello!!!',
-    message: message,
-    allowWhileIdle: true,
-    repeatType: repeatType,
-    repeatTime: repeatTime,
-    soundName: 'default',
-  });
+
   PushNotification.localNotificationSchedule({
-    id: id.toString(),
+    id: '' + id,
     channelId: channelId,
     title: 'hello!!!',
     message: message,
     date: new Date(date),
+    userInfo: {},
     allowWhileIdle: true,
     repeatType: repeatType,
     repeatTime: repeatTime,
+    playSound: true,
     soundName: 'default',
   });
 };
 
 export const DeleteNotification = (id: number) => {
-  PushNotification.cancelLocalNotification(id.toString());
+  PushNotification.cancelLocalNotification('' + id);
 };

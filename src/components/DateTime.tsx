@@ -18,7 +18,7 @@ export const DateTime = (props: DateTimeProps) => {
           mode={'datetime'}
           date={date}
           onDateChange={setDate}
-          minuteInterval={5}
+          minuteInterval={1}
           minimumDate={new Date()}
           androidVariant={'iosClone'}
           fadeToColor={'white'}

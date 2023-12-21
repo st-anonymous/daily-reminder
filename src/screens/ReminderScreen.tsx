@@ -15,7 +15,10 @@ import {CurrentReminder, ReminderDataAtom} from '../data/reminderCluster';
 import {SaveReminders} from '../utils/AsyncStorage';
 import {ReminderProps} from '../types/ReminderProps';
 import {useNavigation} from '@react-navigation/native';
-import {DeleteNotification, ScheduleNotification} from '../utils/PushNotification';
+import {
+  DeleteNotification,
+  ScheduleNotification,
+} from '../utils/PushNotification';
 import {GetRepeatTime, GetRepeatType} from '../types/GetRepeat';
 
 export const ReminderScreen = () => {
